@@ -1,0 +1,141 @@
+{
+  "nodes": [
+    {
+      "type": "camera",
+      "id": "kamera",
+      "translation": [0, 1, 0],
+      "aabb": {
+        "min": [-0.2, -0.2, -0.2],
+        "max": [0.2, 0.2, 0.2]
+      },
+      "aspect": 1,
+      "fov": 1.5,
+      "near": 0.01,
+      "far": 100
+    },
+    {
+      "type": "model",
+      "id": "premikajocakrogla",
+      "mesh": 0,
+      "texture": 0,
+      "aabb": {
+        "min": [-1, -1, -1],
+        "max": [1, 1, 1]
+      },
+      "translation": [3, 1, -5]
+    },
+    {
+      "type": "model",
+      "id": "skybox",
+      "mesh": 3,
+      "texture": 6,
+      "aabb": {
+        "min": [0, 0, 0],
+        "max": [0, 0, 0]
+      },
+      "translation": [0, 0, 0],
+      "scale": [-70,-70,-70]
+    },
+    {
+      "type": "model",
+      "id": "premikajocakrogla",
+      "mesh": 0,
+      "texture": 1,
+      "aabb": {
+        "min": [-1, -1, -1],
+        "max": [1, 1, 1]
+      },
+      "translation": [0, 1, 5]
+    },
+    {
+      "type": "model",
+      "id": "premikajocakrogla",
+      "mesh": 1,
+      "texture": 1,
+      "aabb": {
+        "min": [-0.5, -0.5, -0.5],
+        "max": [0.5, 0.5, 0.5]
+      },
+      "translation": [0, 1, -5]
+    },
+    {
+      "type": "model",
+      "id": "premikajocakrogla",
+      "mesh": 0,
+      "texture": 2,
+      "aabb": {
+        "min": [-1, -1, -1],
+        "max": [1, 1, 1]
+      },
+      "translation": [6, 1, -5]
+    },
+    {
+      "type": "model",
+      "id": "premikajocakrogla",
+      "mesh": 2,
+      "texture": 3,
+      "aabb": {
+        "min": [-1, -1, -1],
+        "max": [1, 1, 1]
+      },
+      "translation": [12, 1, -5]
+    },
+    {
+      "type": "model",
+      "id": "premikajocakrogla",
+      "mesh": 0,
+      "texture": 0,
+      "aabb": {
+        "min": [-1, -0.1, -1],
+        "max": [1, 0.1, 1]
+      },
+      "translation": [3, 0.1, -1],
+      "rotation": [0, 1, 0],
+      "scale": [1, 0.1, 1]
+    },
+    {
+      "id": "a",
+      "type": "model",
+      "mesh": 3,
+      "texture": 5,
+      "aabb": {
+        "min": [-1, -1, -1],
+        "max": [1, 1, 1]
+      },
+      "translation": [3, 1, -10],
+      "scale": [1, 1, 1]
+    },
+    {
+      "type": "model",
+      "id": "premikajocakrogla",
+      "mesh": 0,
+      "texture": 4,
+      "aabb": {
+        "min": [-100, -5, -100],
+        "max": [100, 5, 100]
+      },
+      "translation": [0, -5, 0],
+      "rotation": [0, 1, 0],
+      "scale": [100, 5, 100]
+    }
+  ],
+  "textures": [
+    "../common/images/crate-diffuse.png",
+    "../common/images/grass.png",
+    "../common/images/tuxdog.jpg",
+    "../common/images/handgun_C.jpg",
+    "../common/images/arin.PNG",
+
+    "../common/images/noway.jpg",
+    "../common/images/sVd673S.jpg"
+  ],
+  "ids": [
+    "premikajocakrogla"
+  ],
+  "meshes": [
+    "../common/models/cube.json",
+    "../common/models/pyramid.json",
+    "../common/models/gun.json",
+    "../common/models/sphere.json"
+  ]
+}

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Blast Jumper</title>
+
+    <link rel="stylesheet" type="text/css" href="/common/style.css">
+
+    <script type="text/javascript" src="/lib/gl-matrix-min.js"></script>
+    <script type="text/javascript" src="/lib/dat.gui.min.js"></script>
+    <script type="module" src="game/game.js"></script>
+</head>
+<body>
+    <div class="fullscreen">
+        <canvas id ="cnvs"></canvas>
+    </div>
+    <script>
+        let playing = 0;
+        soundtrack = new Audio("soundtrack.mp3")
+        document.getElementById("cnvs").addEventListener("click", function (){
+            if(playing == 0){
+                playing == 1
+                soundtrack.play();
+            }
+        })
+        soundtrack.addEventListener('ended', function (){
+            soundtrack.play()
+        })
+    </script>
+</body>
+</html>
