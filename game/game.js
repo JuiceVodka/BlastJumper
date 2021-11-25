@@ -33,7 +33,8 @@ class App extends Application {
         const builder = new SceneBuilder(scene);
         this.scene = builder.build();
         this.physics = new Physics(this.scene);
-
+        this.physics.missile = this.physics.missile.bind(this.physics)
+        window.addEventListener("mousedown", this.physics.missile);
         this.funct = new Functions(this.scene);
 
         // Find first camera.

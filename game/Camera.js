@@ -11,14 +11,13 @@ export class Camera extends Node {
 
         this.projection = mat4.create();
         this.updateProjection();
-
         this.mousemoveHandler = this.mousemoveHandler.bind(this);
         this.keydownHandler = this.keydownHandler.bind(this);
         this.keyupHandler = this.keyupHandler.bind(this);
         this.keys = {};
-        this.jmp = 0;
-        this.jmpSpeed = 8;
+        this.jmpSpeed = 7.5;
         this.dBug = false;
+        this.enbl = false;
     }
 
     updateProjection() {
@@ -35,11 +34,11 @@ export class Camera extends Node {
 
 
         // 1: add movement acceleration
-        if(this.jmpSpeed <= 0){
+        /*if(this.jmpSpeed <= 0){
             this.jmp = 0;
             this.jmpSpeed = 8;
             //console.log("ok dost bo")
-        }
+        }*/
         const up = vec3.set(vec3.create(),
             0, this.jmpSpeed, 0);
         let acc = vec3.create();
@@ -62,20 +61,16 @@ export class Camera extends Node {
             vec3.sub(acc, acc, right);
         }
         if (this.keys['ShiftLeft'] && this.dBug) {
-            //console.log('do it work?')
             vec3.sub(acc,acc,up);
         }
-        if(this.keys['Space'] && this.jmp == 0 && this.velocity[1] <= 0.005 && !this.dBug){
-            //console.log(this.velocity)
-            this.jmp = 1;
-            vec3.add(acc,acc,up);
-        }
-        if(this.jmp == 1){
-            vec3.add(acc, acc, up)
-            this.jmpSpeed -= 0.7
+        if (this.keys['ShiftLeft'] && !this.dBug) {
+            c.maxSpeed = 1.5
+        }else {
+            c.maxSpeed = 5
         }
         if(this.keys['Space'] && this.dBug){
             vec3.add(acc,acc,up);
+            console.log("dbug")
         }
 
 
@@ -86,28 +81,39 @@ export class Camera extends Node {
         if (!this.keys['KeyW'] &&
             !this.keys['KeyS'] &&
             !this.keys['KeyD'] &&
-            !this.keys['KeyA'])
+            !this.keys['KeyA'] &&
+            jmpable)
         {
             vec3.scale(c.velocity, c.velocity, 1 - c.friction);
         }
 
+        if(this.keys['Space'] && !this.dBug && jmpable){
+            //console.log(this.velocity)
+            c.velocity[1] = this.jmpSpeed;
+            jmpable = false;
+        }
+
         // 4: limit speed
 
-        //todo limit speed x z loceno od y
-        const len = vec3.len(c.velocity);
+
+        const len = Math.hypot(c.velocity[0], c.velocity[2])
         if (len > c.maxSpeed) {
-            vec3.scale(c.velocity, c.velocity, c.maxSpeed / len);
+            c.velocity[0] *= c.maxSpeed / len
+            c.velocity[2] *= c.maxSpeed / len
         }
+
 
     }
 
     enable() {
+        this.enbl = true;
         document.addEventListener('mousemove', this.mousemoveHandler);
         document.addEventListener('keydown', this.keydownHandler);
         document.addEventListener('keyup', this.keyupHandler);
     }
 
     disable() {
+        this.enbl = false;
         document.removeEventListener('mousemove', this.mousemoveHandler);
         document.removeEventListener('keydown', this.keydownHandler);
         document.removeEventListener('keyup', this.keyupHandler);
@@ -157,11 +163,7 @@ Camera.defaults = {
     velocity         : [0, 0, 0],
     mouseSensitivity : 0.002,
     maxSpeed         : 5,
-    maxSpeedY        : 5,
+    maxSpeedY        : 5,//todo terminal velocity
     friction         : 0.2,
     acceleration     : 20
 };
-
-function jmp(){
-
-}

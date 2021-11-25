@@ -6,6 +6,13 @@ export class Model extends Node {
         super(options);
         this.mesh = mesh;
         this.image = image;
+        if(options.id){
+            this.id = options.id;
+        }
+        if(options.direction){
+            console.log(options);
+            this.direction = options.direction;
+        }
     }
 
 }

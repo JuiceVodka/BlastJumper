@@ -1,33 +1,37 @@
 import { vec3, mat4 } from '../lib/gl-matrix-module.js';
+import  Functions  from './Functions.js'
 
 export class Physics {
 
     constructor(scene) {
         this.scene = scene;
-        this.accIter = 0;
+        this.funct = new Functions(this.scene);
     }
 
     update(dt) {
+        let vertColison = false;
+        let cam = this.funct.findCamera();
         this.scene.traverse(node => {
             if (node.velocity) {
                 vec3.scaleAndAdd(node.translation, node.translation, node.velocity, dt);
                 node.updateTransform();
                 this.scene.traverse(other => {
-                    //console.log(other)
                     if (node !== other) {
-                        if(node.velocity[1] > 4){
-                            console.log(node.velocity[1])
-                        }
                         let coliding = this.resolveCollision(node, other);
-                        if(node.velocity[1] < 0.5 && !coliding || (node.velocity[1] < 1 && node.velocity[0] + node.velocity[2] > 0 )){
-                            this.fall(node)
-                        }else{
-                            this.accIter = 0;
+                        if(node == cam){
+                            vertColison = vertColison || coliding
                         }
                     }
                 });
             }
         });
+        if(!vertColison){
+            jmpable = false
+            this.fall(cam)
+        }else{
+            accM = 0;
+            jmpable = true;
+        }
     }
 
     intervalIntersection(min1, max1, min2, max2) {
@@ -46,7 +50,6 @@ export class Physics {
         const tb = b.getGlobalTransform();
 
         const posa = mat4.getTranslation(vec3.create(), ta);
-        posa[1] -= 1
         const posb = mat4.getTranslation(vec3.create(), tb);
 
 
@@ -65,7 +68,7 @@ export class Physics {
         });
 
         if (!isColliding) {
-            return;
+            return(false);
         }
 
         // Move node A minimally to avoid collision.
@@ -101,17 +104,53 @@ export class Physics {
 
         vec3.add(a.translation, a.translation, minDirection);
         a.updateTransform();
-        return(true)
+        if(minDirection[1] > 0){
+            return(true)
+        }
+        return(false)
     }
 
     fall(a){
-
-        //console.log(a.translation);
-        this.accIter += 0.0001;
-        a.translation[1] -= this.accIter;
-        //vec3.add(a.translation, -iter, a.translation)
+        accM += 0.03;
+        a.velocity[1] -= accM
         a.updateTransform();
+    }
 
+    missile(e){
+        console.log("bombs away")
+        let cam = this.funct.findCamera();
+        if (cam.enbl == true) {
+            let rocket = this.funct.findById("raketa");
+            let rotation = cam.rotation.slice();
+            console.log(rocket.rotation)
+            rocket[0].rotation = rotation;
+            let pitch = rotation[0];
+            let roll = 0;
+            let yaw = rotation[1];
+
+            let velocity_y = Math.sin(rotation[0]);
+            let velocity_x = Math.sin(rotation[1]) * Math.cos(rotation[0]);
+            let velocity_z = Math.cos(rotation[1]) * Math.cos(rotation[0]);
+//
+            //let velocity_x = -Math.cos(yaw)*Math.sin(pitch)*Math.cos(roll)+Math.sin(yaw)*Math.sin(roll);
+            //let velocity_y = -Math.sin(yaw)*Math.sin(pitch)*Math.cos(roll)-Math.cos(yaw)*Math.sin(roll);
+            //let velocity_z = Math.cos(pitch)*Math.sin(roll);
+
+            //let velocity_x = - Math.cos(yaw) * Math.sin(pitch) * Math.sin(roll)- Math.sin(yaw) * Math.cos(roll);
+            //let velocity_y = - Math.sin(yaw) * Math.sin(pitch) * Math.sin(roll) + Math.cos(yaw) * Math.cos(roll);
+            //let velocity_z = Math.cos(pitch) * Math.sin(roll);
+            const factor = 30;
+            rocket[0].velocity = [-velocity_x * factor, velocity_y * factor, -velocity_z * factor]//[velocity_x, velocity_y, velocity_z];
+            rocket[0].translation = cam.translation.slice();
+            console.log(rotation);
+            rocket[0].updateTransform();
+
+            //move camera in other direction
+            cam.friction = 0.03;
+            const v_factor = 20;
+            cam.velocity = [velocity_x * v_factor, - velocity_y * v_factor, velocity_z * v_factor];
+            cam.updateTransform();
+        }
     }
 
 }
