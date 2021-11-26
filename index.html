@@ -8,8 +8,15 @@
     <script type="text/javascript" src="/lib/gl-matrix-min.js"></script>
     <script type="text/javascript" src="/lib/dat.gui.min.js"></script>
     <script type="module" src="game/game.js"></script>
+    <style>
+        .overlay {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+    }</style>
 </head>
 <body>
+<div class = "overlay">+</div>
     <div class="fullscreen">
         <canvas id ="cnvs"></canvas>
     </div>
@@ -21,7 +28,7 @@
         document.getElementById("cnvs").addEventListener("click", function (){
             if(playing == 0){
                 playing == 1
-                soundtrack.play();
+                //soundtrack.play();
             }
         })
         soundtrack.addEventListener('ended', function (){

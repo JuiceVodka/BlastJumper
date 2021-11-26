@@ -18,6 +18,9 @@ export class Physics {
                 this.scene.traverse(other => {
                     if (node !== other) {
                         let coliding = this.resolveCollision(node, other);
+                        if(coliding && other.velocity){
+                            //todo premaknemo se nas
+                        }
                         if(node == cam){
                             vertColison = vertColison || coliding
                         }
@@ -117,6 +120,7 @@ export class Physics {
     }
 
     missile(e){
+        accM = 0;
         console.log("bombs away")
         let cam = this.funct.findCamera();
         if (cam.enbl == true) {
@@ -146,7 +150,7 @@ export class Physics {
             rocket[0].updateTransform();
 
             //move camera in other direction
-            cam.friction = 0.03;
+            //cam.friction = 0.03;
             const v_factor = 20;
             cam.velocity = [velocity_x * v_factor, - velocity_y * v_factor, velocity_z * v_factor];
             cam.updateTransform();
