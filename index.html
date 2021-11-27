@@ -13,15 +13,18 @@
         position: fixed;
         left: 50%;
         top: 50%;
+        margin-left: -20px;
+        margin-top: -20px;
     }</style>
 </head>
 <body>
-<div class = "overlay">+</div>
+<div class = "overlay"><img src="common/images/crosshair.png" width="40" height="40"></div>
     <div class="fullscreen">
         <canvas id ="cnvs"></canvas>
     </div>
     <script>
         let jmpable = true;
+        let blasting = false;
         let accM = 0;
         let playing = 0;
         soundtrack = new Audio("soundtrack.mp3")

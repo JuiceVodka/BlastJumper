@@ -15,7 +15,7 @@ export class Camera extends Node {
         this.keydownHandler = this.keydownHandler.bind(this);
         this.keyupHandler = this.keyupHandler.bind(this);
         this.keys = {};
-        this.jmpSpeed = 7.5;
+        this.jmpSpeed = 7;
         this.dBug = false;
         this.enbl = false;
     }
@@ -29,6 +29,8 @@ export class Camera extends Node {
 
         const forward = vec3.set(vec3.create(),
             -Math.sin(c.rotation[1]), 0, -Math.cos(c.rotation[1]));
+        const forwardB = vec3.set(vec3.create(),
+            -Math.sin(c.rotation[1])*0.5, 0, -Math.cos(c.rotation[1])*0.5);
         const right = vec3.set(vec3.create(),
             Math.cos(c.rotation[1]), 0, -Math.sin(c.rotation[1]));
 
@@ -49,10 +51,18 @@ export class Camera extends Node {
             this.jmpSpeed = 10;
         }
         if (this.keys['KeyW']) {
-            vec3.add(acc, acc, forward);
+            if(blasting){
+                vec3.add(acc, acc, forwardB);
+            }else{
+                vec3.add(acc, acc, forward);
+            }
         }
         if (this.keys['KeyS']) {
-            vec3.sub(acc, acc, forward);
+            if(blasting){
+                vec3.sub(acc, acc, forwardB);
+            }else{
+                vec3.sub(acc, acc, forward);
+            }
         }
         if (this.keys['KeyD']) {
             vec3.add(acc, acc, right);
@@ -64,6 +74,7 @@ export class Camera extends Node {
             vec3.sub(acc,acc,up);
         }
         if (this.keys['ShiftLeft'] && !this.dBug) {
+            console.log("ja halo?")
             c.maxSpeed = 1.5
         }else {
             c.maxSpeed = 5
@@ -86,6 +97,12 @@ export class Camera extends Node {
         {
             vec3.scale(c.velocity, c.velocity, 1 - c.friction);
         }
+        if(blasting){
+            c.maxSpeed = 15;
+        }
+        if(jmpable){
+            blasting = false;
+        }
 
         if(this.keys['Space'] && !this.dBug && jmpable){
             //console.log(this.velocity)
@@ -95,12 +112,14 @@ export class Camera extends Node {
 
         // 4: limit speed
 
-
         const len = Math.hypot(c.velocity[0], c.velocity[2])
         if (len > c.maxSpeed) {
             c.velocity[0] *= c.maxSpeed / len
             c.velocity[2] *= c.maxSpeed / len
         }
+       /* if(c.velocity[1] < -c.maxSpeedY){
+            c.velocity[1] = -c.maxSpeedY
+        }*/
 
 
     }
@@ -163,7 +182,7 @@ Camera.defaults = {
     velocity         : [0, 0, 0],
     mouseSensitivity : 0.002,
     maxSpeed         : 5,
-    maxSpeedY        : 5,//todo terminal velocity
+    maxSpeedY        : 50,//todo terminal velocity
     friction         : 0.2,
     acceleration     : 20
 };

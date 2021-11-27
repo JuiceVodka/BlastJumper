@@ -19,10 +19,6 @@ export class Physics {
                 this.scene.traverse(other => {
                     if (node !== other) {
                         let coliding = this.resolveCollision(node, other);
-                        if(coliding && other.velocity){
-                            
-                            //todo premaknemo se nas
-                        }
                         if(node == cam){
                             vertColison = vertColison || coliding
                         }
@@ -78,7 +74,6 @@ export class Physics {
 
 
         if (a.id == "raketa") {
-            
             let cam = this.funct.findCamera();
             if (b == cam) {
                 console.log("a je raketa in b je kamera")
@@ -91,12 +86,20 @@ export class Physics {
             let dist = Math.pow((a.translation[0] - cam.translation[0]), 2) +
                        Math.pow((a.translation[1] - cam.translation[1]), 2) + 
                        Math.pow((a.translation[2] - cam.translation[2]), 2);
-            dist = Math.sqrt(dist) 
+            dist = Math.sqrt(dist)
+            if(dist < 5){
+                let v_factor = (1 / dist)*0.3;
+                if(!jmpable){
+                    v_factor = (1 / dist)*0.75;
+                }
+                console.log(v_factor);
+                cam.velocity = [-vx * v_factor, - vy * v_factor, -vz * v_factor];
+                cam.updateTransform();
+                blasting = true;
+                accM = 0;
+            }
 
-            const v_factor = (1 / dist) * 5;
-            console.log(v_factor);
-            cam.velocity = [-vx * v_factor, - vy * v_factor, -vz * v_factor];
-            cam.updateTransform();
+
 
             a.translation = [0, -150, 0];
             a.velocity = [0, 0, 0];
@@ -144,13 +147,12 @@ export class Physics {
     }
 
     fall(a){
-        accM += 0.03;
+        accM += 0.02;
         a.velocity[1] -= accM
         a.updateTransform();
     }
 
     missile(e){
-        accM = 0;
         console.log("bombs away")
         let cam = this.funct.findCamera();
         if (cam.enbl == true) {
@@ -175,7 +177,14 @@ export class Physics {
             //let velocity_z = Math.cos(pitch) * Math.sin(roll);
             const factor = 30;
             rocket[0].velocity = [-velocity_x * factor, velocity_y * factor, -velocity_z * factor]//[velocity_x, velocity_y, velocity_z];
-            let trans = cam.translation.slice();           
+            let trans = cam.translation.slice();
+            rocket[0].velocity[0] *= 0.025
+            rocket[0].velocity[1] *= 0.025
+            rocket[0].velocity[2] *= 0.025
+            vec3.add(trans, trans, rocket[0].velocity);
+            rocket[0].velocity[0] *= 40
+            rocket[0].velocity[1] *= 40
+            rocket[0].velocity[2] *= 40
             //trans[1] = trans[1] + 0.5;
             rocket[0].translation = trans;
             //console.log(rotation);
