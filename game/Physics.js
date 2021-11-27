@@ -1,4 +1,5 @@
 import { vec3, mat4 } from '../lib/gl-matrix-module.js';
+import { Camera } from './Camera.js';
 import  Functions  from './Functions.js'
 
 export class Physics {
@@ -19,6 +20,7 @@ export class Physics {
                     if (node !== other) {
                         let coliding = this.resolveCollision(node, other);
                         if(coliding && other.velocity){
+                            
                             //todo premaknemo se nas
                         }
                         if(node == cam){
@@ -74,6 +76,34 @@ export class Physics {
             return(false);
         }
 
+
+        if (a.id == "raketa") {
+            
+            let cam = this.funct.findCamera();
+            if (b == cam) {
+                console.log("a je raketa in b je kamera")
+                return (false);
+            }
+            let vx = a.velocity[0];
+            let vy = a.velocity[1];
+            let vz = a.velocity[2];
+
+            let dist = Math.pow((a.translation[0] - cam.translation[0]), 2) +
+                       Math.pow((a.translation[1] - cam.translation[1]), 2) + 
+                       Math.pow((a.translation[2] - cam.translation[2]), 2);
+            dist = Math.sqrt(dist) 
+
+            const v_factor = (1 / dist) * 5;
+            console.log(v_factor);
+            cam.velocity = [-vx * v_factor, - vy * v_factor, -vz * v_factor];
+            cam.updateTransform();
+
+            a.translation = [0, -150, 0];
+            a.velocity = [0, 0, 0];
+            a.updateTransform();
+            return (true);
+        }
+
         // Move node A minimally to avoid collision.
         const diffa = vec3.sub(vec3.create(), maxb, mina);
         const diffb = vec3.sub(vec3.create(), maxa, minb);
@@ -126,7 +156,7 @@ export class Physics {
         if (cam.enbl == true) {
             let rocket = this.funct.findById("raketa");
             let rotation = cam.rotation.slice();
-            console.log(rocket.rotation)
+            //console.log(rocket.rotation)
             rocket[0].rotation = rotation;
             let pitch = rotation[0];
             let roll = 0;
@@ -145,15 +175,17 @@ export class Physics {
             //let velocity_z = Math.cos(pitch) * Math.sin(roll);
             const factor = 30;
             rocket[0].velocity = [-velocity_x * factor, velocity_y * factor, -velocity_z * factor]//[velocity_x, velocity_y, velocity_z];
-            rocket[0].translation = cam.translation.slice();
-            console.log(rotation);
+            let trans = cam.translation.slice();           
+            //trans[1] = trans[1] + 0.5;
+            rocket[0].translation = trans;
+            //console.log(rotation);
             rocket[0].updateTransform();
 
             //move camera in other direction
-            //cam.friction = 0.03;
-            const v_factor = 20;
-            cam.velocity = [velocity_x * v_factor, - velocity_y * v_factor, velocity_z * v_factor];
-            cam.updateTransform();
+            
+            //const v_factor = 20;
+            //cam.velocity = [velocity_x * v_factor, - velocity_y * v_factor, velocity_z * v_factor];
+            //cam.updateTransform();
         }
     }
 
