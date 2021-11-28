@@ -724,7 +724,7 @@
     }
   ],
   "textures": [
-    "../common/images/crate-diffuse.png",
+    "../common/images/crate.jpg",
     "../common/images/grass.png",
     "../common/images/tuxdog.jpg",
     "../common/images/handgun_C.jpg",
@@ -742,7 +742,7 @@
     "../common/images/barrel.jpg",
     "../common/images/lightercrate.png",
 
-    "../common/images/wood.jpg",
+    "../common/images/wood.png",
     "../common/images/darkbrick.jpg",
     "../common/images/red.png",
     "../common/images/Palette.png",
