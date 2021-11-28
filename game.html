@@ -10,27 +10,38 @@
     <script type="module" src="game/game.js"></script>
     <style>
         .overlay {
-        position: fixed;
-        left: 50%;
-        top: 50%;
-        margin-left: -20px;
-        margin-top: -20px;
-        }
-    </style>
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            margin-left: -20px;
+            margin-top: -20px;
+        }</style>
 </head>
 <body>
-<div class = "overlay"><img src="common/images/crosshair.png" width="40" height="40"></div>
-    <div class="fullscreen">
-        <canvas id ="cnvs"></canvas>
-    </div>
+<div class="timer" id="timerid">0:00</div>
+<div class="classend" id = "ending">
+    Bravo!</br>
+    Uspelo ti je pobegniti!</br>
+    Tvoj poskus je trajal: <strong id="endtime" ></strong>!<br><br>
+    Za ponovni poskus pritisni <br>"r"
+</div>
+<div id="crosshair" class = "overlay"><img src="common/images/crosshair.png" width="40" height="40"></div>
+<div class="fullscreen">
+    <canvas id ="cnvs"></canvas>
+</div>
     <script>
         let jmpable = true;
         let blasting = false;
+        let reset = false;
         let accM = 0;
         let playing = 0;
         let lastClick = 0;
-        soundtrack = new Audio("soundtrack.mp3");
-        soundtrack.volume = 0.7;
+        let mute = false;
+        let crnch = false;
+        crunch = new Audio("../common/sounds/crunch.mp3");
+        crunch.volume = 0.6;
+        soundtrack = new Audio("./common/sounds/soundtrack.mp3");
+        soundtrack.volume = 0.6;
         document.getElementById("cnvs").addEventListener("click", function (){
             if(playing == 0){
                 playing == 1
@@ -39,6 +50,17 @@
         });
         soundtrack.addEventListener('ended', function (){
             soundtrack.play()
+        });
+        document.addEventListener('keydown', function (e){
+            if(e.key == "m") {
+                console.log("mjutejmo");
+                mute = !mute
+                if(mute){
+                    soundtrack.volume = 0
+                }else{
+                    soundtrack.volume = 0.7
+                }
+            }
         });
     </script>
 </body>

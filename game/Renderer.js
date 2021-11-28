@@ -4,6 +4,8 @@ import { WebGL } from '../common/engine/WebGL.js';
 
 import { shaders } from './shaders.js';
 
+import { shaders2 } from './shaders2.js';
+
 
 export class Renderer {
 
@@ -15,6 +17,7 @@ export class Renderer {
         gl.enable(gl.CULL_FACE);
 
         this.programs = WebGL.buildPrograms(gl, shaders);
+        this.programs2 = WebGL.buildPrograms(gl, shaders2);
 
         this.defaultTexture = WebGL.createTexture(gl, {
             width  : 1,
@@ -41,6 +44,14 @@ export class Renderer {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         const program = this.programs.phong;
+        const program2 = this.programs2.simple;
+        gl.useProgram(program2.program);
+        let matrix2 = mat4.create();
+        const viewMatrix2 = camera.getGlobalTransform();
+        mat4.invert(viewMatrix2, viewMatrix2);
+        mat4.copy(matrix2, viewMatrix2);
+        gl.uniformMatrix4fv(program2.uniforms.uProjection, false, camera.projection);
+
         gl.useProgram(program.program);
 
         let matrix = mat4.create();
@@ -68,14 +79,31 @@ export class Renderer {
             node => {
                 matrixStack.push(mat4.clone(matrix));
                 mat4.mul(matrix, matrix, node.transform);
-                if (node.gl.vao) {
-                    gl.bindVertexArray(node.gl.vao);
-                    gl.uniformMatrix4fv(program.uniforms.uViewModel, false, matrix);
-                    gl.activeTexture(gl.TEXTURE0);
-                    gl.bindTexture(gl.TEXTURE_2D, node.gl.texture);
-                    gl.uniform1i(program.uniforms.uTexture, 0);
-                    gl.drawElements(gl.TRIANGLES, node.gl.indices, gl.UNSIGNED_SHORT, 0);
+                if(node.id == "skybox"){
+                    matrixStack.push(mat4.clone(matrix2));
+                    mat4.mul(matrix2, matrix2, node.transform);
+                    gl.useProgram(program2.program);
+                    if (node.gl.vao) {
+                        gl.bindVertexArray(node.gl.vao);
+                        gl.uniformMatrix4fv(program2.uniforms.uViewModel, false, matrix);
+                        gl.activeTexture(gl.TEXTURE0);
+                        gl.bindTexture(gl.TEXTURE_2D, node.gl.texture);
+                        gl.uniform1i(program2.uniforms.uTexture, 0);
+                        gl.drawElements(gl.TRIANGLES, node.gl.indices, gl.UNSIGNED_SHORT, 0);
+                    }
+                }else {
+                    gl.useProgram(program.program);
+                    if (node.gl.vao) {
+                        gl.bindVertexArray(node.gl.vao);
+                        gl.uniformMatrix4fv(program.uniforms.uViewModel, false, matrix);
+                        gl.activeTexture(gl.TEXTURE0);
+                        gl.bindTexture(gl.TEXTURE_2D, node.gl.texture);
+                        gl.uniform1i(program.uniforms.uTexture, 0);
+                        gl.drawElements(gl.TRIANGLES, node.gl.indices, gl.UNSIGNED_SHORT, 0);
+                    }
                 }
+
+
             },
             node => {
                 matrix = matrixStack.pop();

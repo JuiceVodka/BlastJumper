@@ -11,7 +11,11 @@ import { SceneBuilder } from './SceneBuilder.js';
 import Functions from './Functions.js';
 import { Light } from './Light.js';
 
+import { vec3 } from '../lib/gl-matrix-module.js';
+
+
 let loaded=false;
+let startingTime = 0;
 
 class App extends Application {
 
@@ -22,6 +26,7 @@ class App extends Application {
         this.time = Date.now();
         this.startTime = this.time;
         this.aspect = 1;
+        startingTime = Date.now();
         this.light = new Light();
 
         this.pointerlockchangeHandler = this.pointerlockchangeHandler.bind(this);
@@ -47,13 +52,15 @@ class App extends Application {
             if (node instanceof Camera) {
                 this.camera = node;
             }
-            
         });
-
+        document.addEventListener('keydown', function (e){
+            if(e.key == "r"){
+                reset = true;
+            }
+        });
         this.camera.aspect = this.aspect;
         this.camera.updateProjection();
         this.renderer.prepare(this.scene);
-
 
         loaded = true;
     }
@@ -86,11 +93,24 @@ class App extends Application {
         if (this.camera) {
             this.camera.update(dt);
         }
-
         if (this.physics) {
             this.physics.update(dt);
         }
 
+        let BFG = this.funct.findById("bazooka");
+        vec3.copy(BFG[0].translation, this.camera.translation);
+        vec3.copy(BFG[0].rotation, this.camera.rotation);
+        BFG[0].updateTransform();
+
+        let seconds = Math.floor((t-startingTime) * 0.001);
+        let minutes = Math.floor(seconds/60);
+        seconds%=60;
+        if(seconds<10){
+            seconds="0"+seconds;
+        }
+
+        let timertxt = minutes+":"+seconds;
+        document.getElementById("timerid").innerHTML=timertxt;
         let secondplat = this.funct.findById("movepyramid2");
         //console.log(secondplat[0]);
         if(secondplat[0].translation[1]>12){
@@ -99,9 +119,9 @@ class App extends Application {
             secondplat[0].direction=0;
         }
         if(secondplat[0].direction==0){
-            secondplat[0].translation[1]+=0.01;
+            secondplat[0].translation[1]+=0.03;
         } else if(secondplat[0].direction==1) {
-            secondplat[0].translation[1]-=0.01;
+            secondplat[0].translation[1]-=0.03;
         }
         secondplat[0].updateTransform();
 
@@ -114,19 +134,19 @@ class App extends Application {
         }
         if(firstplat[0].direction==0){
             if(this.funct.checkColision(this.camera,firstplat[0])){
-                this.camera.translation[0]+=0.01;
+                this.camera.translation[0]+=0.03;
             }
-            firstplat[0].translation[0]+=0.01;
+            firstplat[0].translation[0]+=0.03;
         } else if(firstplat[0].direction==1) {
             if(this.funct.checkColision(this.camera,firstplat[0])){
-                this.camera.translation[0]-=0.01;
+                this.camera.translation[0]-=0.03;
             }
-            firstplat[0].translation[0]-=0.01;
+            firstplat[0].translation[0]-=0.03;
         }
         firstplat[0].updateTransform();
 
         let propeller = this.funct.findById("propeller");
-        propeller[0].rotation[1]+=0.05;
+        propeller[0].rotation[1]+=0.2;
         propeller[0].updateTransform();
 
         let button1 = this.funct.findById("touchplate1");
@@ -160,6 +180,30 @@ class App extends Application {
         }
         if(this.funct.checkColision(this.camera,ladder[0]) && button2[0].direction==1 && button1[0].direction==1){
             console.log("ladder!");
+            document.getElementById("crosshair").style.display="none";
+            document.getElementById("endtime").innerHTML=timertxt;
+            document.getElementById("ending").style.display="block";
+            this.camera.translation = [0,1,0];
+        }
+        console.log()
+        if(reset){
+            reset = false;
+            button2[0].direction=0;
+            button1[0].direction=0;
+            button2[0].translation[1]=11.1;
+            button1[0].translation[1]=11.1;
+            button1[0].updateTransform();
+            button2[0].updateTransform();
+            bridge[0].translation[1]=-3;
+            bridge[1].translation[1]=-3;
+            bridge[0].direction = 0;
+            bridge[0].updateTransform();
+            bridge[1].updateTransform();
+            this.camera.translation = [0, 1, 0];
+            this.camera.rotation = [0, 0, 0];
+            startingTime = Date.now();
+            document.getElementById("crosshair").style.display="block";
+            document.getElementById("ending").style.display="none";
         }
     }
 
@@ -189,5 +233,4 @@ document.addEventListener('DOMContentLoaded', () => {
     canvas.onclick = function (){
         app.enableCamera();
     }
-    //todo esc menu
 });

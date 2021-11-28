@@ -119,9 +119,10 @@ export class Camera extends Node {
             c.velocity[0] *= c.maxSpeed / len
             c.velocity[2] *= c.maxSpeed / len
         }
-       /* if(c.velocity[1] < -c.maxSpeedY){
-            c.velocity[1] = -c.maxSpeedY
-        }*/
+        if(c.velocity[1] < -c.maxSpeedY){
+            crnch = true;
+            console.log("terminal");
+        }
 
 
     }
@@ -180,11 +181,11 @@ Camera.defaults = {
     aspect           : 1,
     fov              : 1.5,
     near             : 0.01,
-    far              : 100,
+    far              : 150,
     velocity         : [0, 0, 0],
     mouseSensitivity : 0.002,
     maxSpeed         : 5,
-    maxSpeedY        : 50,//todo terminal velocity
+    maxSpeedY        : 25,
     friction         : 0.2,
     acceleration     : 20
 };

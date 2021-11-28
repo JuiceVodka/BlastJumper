@@ -6,7 +6,7 @@ export class Light extends Node {
         super();
 
         Object.assign(this, {
-            position         : [0.2, 7, 0],
+            position         : [50, 50, -30],
             ambientColor     : [100, 100, 100],
             diffuseColor     : [204, 204, 204],
             specularColor    : [255, 255, 255],

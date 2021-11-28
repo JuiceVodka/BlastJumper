@@ -5,6 +5,8 @@ import  Functions  from './Functions.js'
 export class Physics {
 
     constructor(scene) {
+        this.stTime = 0;
+        this.eTime = 0;
         this.scene = scene;
         this.funct = new Functions(this.scene);
     }
@@ -12,17 +14,14 @@ export class Physics {
     update(dt) {
         let vertColison = false;
         let cam = this.funct.findCamera();
-        console.log(cam.translation)
         this.scene.traverse(node => {
             if (node.velocity) {
                 vec3.scaleAndAdd(node.translation, node.translation, node.velocity, dt);
                 node.updateTransform();
                 if (node.id == "particle") {
-                    let distance = Math.pow((node.translation[0] - cam.translation[0]), 2) +
-                        Math.pow((node.translation[1] - cam.translation[1]), 2) +
-                        Math.pow((node.translation[2] - cam.translation[2]), 2);
-                    distance = Math.sqrt(distance)
-                    if (distance > 10) {
+                    let end = new Date().getTime();
+                    this.eTime = end - this.stTime;
+                    if (this.eTime > 500) {
                         let p = this.funct.findById("particle");
                         for (let i = 0; i < p.length; i++) {
                             p[i].translation[0] = [0, -70, 0];
@@ -41,13 +40,6 @@ export class Physics {
                     /*if(other.id == "bazooka" && node == cam){
                         vec3.copy(other.translation, node.translation);
                         vec3.copy(other.rotation, node.rotation);
-                        other.rotation[1] += Math.Pi/4
-
-                        let velocity_y = Math.sin(node.rotation[0]);
-                        let velocity_x = Math.sin(node.rotation[1]) * Math.cos(node.rotation[0]);
-                        let velocity_z = Math.cos(node.rotation[1]) * Math.cos(node.rotation[0]);
-                        let vel = [-velocity_x * 2, 0, 0];
-                        other.translation = vec3.scaleAndAdd(other.translation, other.translation, vel, 2);
                         other.updateTransform();
                     }*/
                 });
@@ -59,6 +51,10 @@ export class Physics {
         }else{
             accM = 0;
             jmpable = true;
+            if(crnch && !mute){
+                crnch = false;
+                crunch.play();
+            }
         }
     }
 
@@ -74,7 +70,7 @@ export class Physics {
 
     resolveCollision(a, b) {
         // Update bounding boxes with global translation.
-        if(b.id == "bazooka"){
+        if(b.id == "bazooka" || a.id == "bazooka"){
             return false;
         }
         const ta = a.getGlobalTransform();
@@ -106,7 +102,6 @@ export class Physics {
         if (a.id == "raketa") {
             let cam = this.funct.findCamera();
             if (b == cam) {
-                console.log("a je raketa in b je kamera")
                 return (false);
             }
             let vx = a.velocity[0];
@@ -122,14 +117,30 @@ export class Physics {
                 if(!jmpable){
                     v_factor = (1 / dist)*0.75;
                 }
-                console.log(v_factor);
+                //console.log(v_factor);
                 cam.velocity = [-vx * v_factor, - vy * v_factor, -vz * v_factor];
                 cam.updateTransform();
                 blasting = true;
                 accM = 0;
+                crnch = false;
             }
+            let distance = Math.pow((a.translation[0] - cam.translation[0]), 2) +
+                Math.pow((a.translation[1] - cam.translation[1]), 2) +
+                Math.pow((a.translation[2] - cam.translation[2]), 2);
+            distance = Math.sqrt(distance);
             this.explode(a.translation);
-            let bm = new Audio("./game/boom.mp3")
+            this.stTime = new Date().getTime();
+            let bm = new Audio("../common/sounds/boom.mp3");
+            let vol = 3/distance;
+            if(vol > 1){
+                bm.volume = 1;
+            }else{
+                bm.volume = vol;
+            }
+            console.log(mute);
+            if(mute){
+                bm.volume = 0;
+            }
             bm.play();
             a.translation = [0, -150, 0];
             a.velocity = [0, 0, 0];
@@ -185,7 +196,7 @@ export class Physics {
     missile(e){
         let delay = 700;
         if(lastClick + delay < Date.now()){
-            console.log("bombs away")
+            //console.log("bombs away")
             let cam = this.funct.findCamera();
             if (cam.enbl == true) {
                 let rocket = this.funct.findById("raketa");
