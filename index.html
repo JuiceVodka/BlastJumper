@@ -1,42 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Blast Jumper</title>
-
-    <link rel="stylesheet" type="text/css" href="/common/style.css">
-
-    <script type="text/javascript" src="/lib/gl-matrix-min.js"></script>
-    <script type="text/javascript" src="/lib/dat.gui.min.js"></script>
-    <script type="module" src="game/game.js"></script>
-    <style>
-        .overlay {
-        position: fixed;
-        left: 50%;
-        top: 50%;
-        margin-left: -20px;
-        margin-top: -20px;
-    }</style>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="/common/style.css">
+  <script type="module" src="./game/game.js"></script>
+  <title>Blast Jumper</title>
 </head>
 <body>
-<div class = "overlay"><img src="common/images/crosshair.png" width="40" height="40"></div>
-    <div class="fullscreen">
-        <canvas id ="cnvs"></canvas>
-    </div>
-    <script>
-        let jmpable = true;
-        let blasting = false;
-        let accM = 0;
-        let playing = 0;
-        soundtrack = new Audio("soundtrack.mp3")
-        document.getElementById("cnvs").addEventListener("click", function (){
-            if(playing == 0){
-                playing == 1
-                //soundtrack.play();
-            }
-        })
-        soundtrack.addEventListener('ended', function (){
-            soundtrack.play()
-        })
-    </script>
+<style>
+  body {
+    background-image: url('./common/images/soldierback.jpg');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-attachment: fixed;
+  }
+</style>
+<div class="PLAYGAME" id="PLAYGAME" style="cursor: pointer">PLAY</div>
+<script>
+  document.getElementById("PLAYGAME").addEventListener("click", function (){
+    window.location.href = "game.html";
+  })
+</script>
 </body>
 </html>

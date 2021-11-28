@@ -37,3 +37,16 @@ a.back {
 a.back:hover {
     background: #ddd;
 }
+
+.PLAYGAME{
+    position: absolute;
+    left: 55%;
+    top: 70%;
+    border: 10px gold;
+    border-radius: 70px;
+    border-style: solid;
+    padding: 20px;
+    color:orange;
+    font-family: 'Gill Sans', sans-serif;
+    font-size: 100px;
+}

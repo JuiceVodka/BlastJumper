@@ -2,6 +2,7 @@ import { vec3, mat4 } from '../lib/gl-matrix-module.js';
 
 import { Utils } from './Utils.js';
 import { Node } from './Node.js';
+import Functions from "./Functions.js";
 
 export class Camera extends Node {
 
@@ -41,6 +42,7 @@ export class Camera extends Node {
             this.jmpSpeed = 8;
             //console.log("ok dost bo")
         }*/
+
         const up = vec3.set(vec3.create(),
             0, this.jmpSpeed, 0);
         let acc = vec3.create();

@@ -34,7 +34,9 @@ class App extends Application {
         this.scene = builder.build();
         this.physics = new Physics(this.scene);
         this.physics.missile = this.physics.missile.bind(this.physics)
-        window.addEventListener("mousedown", this.physics.missile);
+
+        window.addEventListener("mousedown", this.physics.missile)
+
         this.funct = new Functions(this.scene);
 
         // Find first camera.
@@ -88,7 +90,7 @@ class App extends Application {
         }
 
         let secondplat = this.funct.findById("movepyramid2");
-        //console.log(sphere[0].translation);
+        //console.log(secondplat[0]);
         if(secondplat[0].translation[1]>12){
             secondplat[0].direction =1;
         } else if(secondplat[0].translation[1]<6){
@@ -180,6 +182,10 @@ class App extends Application {
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.querySelector('canvas');
     const app = new App(canvas);
-    const gui = new GUI();
-    gui.add(app, 'enableCamera');
+    //const gui = new GUI();
+    //gui.add(app, 'enableCamera');
+    canvas.onclick = function (){
+        app.enableCamera();
+    }
+    //todo esc menu
 });

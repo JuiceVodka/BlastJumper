@@ -16,13 +16,39 @@ export class Physics {
             if (node.velocity) {
                 vec3.scaleAndAdd(node.translation, node.translation, node.velocity, dt);
                 node.updateTransform();
+                if (node.id == "particle") {
+                    let distance = Math.pow((node.translation[0] - cam.translation[0]), 2) +
+                        Math.pow((node.translation[1] - cam.translation[1]), 2) +
+                        Math.pow((node.translation[2] - cam.translation[2]), 2);
+                    distance = Math.sqrt(distance)
+                    if (distance > 10) {
+                        let p = this.funct.findById("particle");
+                        for (let i = 0; i < p.length; i++) {
+                            p[i].translation[0] = [0, -70, 0];
+                            p[i].velocity = [0, 0, 0];
+                            p[i].updateTransform();
+                        }
+                    }
+                }
                 this.scene.traverse(other => {
                     if (node !== other) {
                         let coliding = this.resolveCollision(node, other);
                         if(node == cam){
-                            vertColison = vertColison || coliding
+                            vertColison = vertColison || coliding;
                         }
                     }
+                    /*if(other.id == "bazooka" && node == cam){
+                        vec3.copy(other.translation, node.translation);
+                        vec3.copy(other.rotation, node.rotation);
+                        other.rotation[1] += Math.Pi/4
+
+                        let velocity_y = Math.sin(node.rotation[0]);
+                        let velocity_x = Math.sin(node.rotation[1]) * Math.cos(node.rotation[0]);
+                        let velocity_z = Math.cos(node.rotation[1]) * Math.cos(node.rotation[0]);
+                        let vel = [-velocity_x * 2, 0, 0];
+                        other.translation = vec3.scaleAndAdd(other.translation, other.translation, vel, 2);
+                        other.updateTransform();
+                    }*/
                 });
             }
         });
@@ -47,6 +73,9 @@ export class Physics {
 
     resolveCollision(a, b) {
         // Update bounding boxes with global translation.
+        if(b.id == "bazooka"){
+            return false;
+        }
         const ta = a.getGlobalTransform();
         const tb = b.getGlobalTransform();
 
@@ -98,9 +127,9 @@ export class Physics {
                 blasting = true;
                 accM = 0;
             }
-
-
-
+            this.explode(a.translation);
+            let bm = new Audio("./game/boom.mp3")
+            bm.play();
             a.translation = [0, -150, 0];
             a.velocity = [0, 0, 0];
             a.updateTransform();
@@ -153,48 +182,76 @@ export class Physics {
     }
 
     missile(e){
-        console.log("bombs away")
-        let cam = this.funct.findCamera();
-        if (cam.enbl == true) {
-            let rocket = this.funct.findById("raketa");
-            let rotation = cam.rotation.slice();
-            //console.log(rocket.rotation)
-            rocket[0].rotation = rotation;
-            let pitch = rotation[0];
-            let roll = 0;
-            let yaw = rotation[1];
+        let delay = 700;
+        if(lastClick + delay < Date.now()){
+            console.log("bombs away")
+            let cam = this.funct.findCamera();
+            if (cam.enbl == true) {
+                let rocket = this.funct.findById("raketa");
+                let rotation = cam.rotation.slice();
+                //console.log(rocket.rotation)
+                rocket[0].rotation = rotation;
+                let pitch = rotation[0];
+                let roll = 0;
+                let yaw = rotation[1]; //+ (Math.PI/2);
 
-            let velocity_y = Math.sin(rotation[0]);
-            let velocity_x = Math.sin(rotation[1]) * Math.cos(rotation[0]);
-            let velocity_z = Math.cos(rotation[1]) * Math.cos(rotation[0]);
-//
-            //let velocity_x = -Math.cos(yaw)*Math.sin(pitch)*Math.cos(roll)+Math.sin(yaw)*Math.sin(roll);
-            //let velocity_y = -Math.sin(yaw)*Math.sin(pitch)*Math.cos(roll)-Math.cos(yaw)*Math.sin(roll);
-            //let velocity_z = Math.cos(pitch)*Math.sin(roll);
+                let velocity_y = Math.sin(rotation[0]);
+                let velocity_x = Math.sin(rotation[1]) * Math.cos(rotation[0]);
+                let velocity_z = Math.cos(rotation[1]) * Math.cos(rotation[0]);
+                //let velocity_x = -Math.cos(yaw)*Math.sin(pitch)*Math.cos(roll)+Math.sin(yaw)*Math.sin(roll);
+                //let velocity_y = -Math.sin(yaw)*Math.sin(pitch)*Math.cos(roll)-Math.cos(yaw)*Math.sin(roll);
+                //let velocity_z = Math.cos(pitch)*Math.sin(roll);
 
-            //let velocity_x = - Math.cos(yaw) * Math.sin(pitch) * Math.sin(roll)- Math.sin(yaw) * Math.cos(roll);
-            //let velocity_y = - Math.sin(yaw) * Math.sin(pitch) * Math.sin(roll) + Math.cos(yaw) * Math.cos(roll);
-            //let velocity_z = Math.cos(pitch) * Math.sin(roll);
-            const factor = 30;
-            rocket[0].velocity = [-velocity_x * factor, velocity_y * factor, -velocity_z * factor]//[velocity_x, velocity_y, velocity_z];
-            let trans = cam.translation.slice();
-            rocket[0].velocity[0] *= 0.025
-            rocket[0].velocity[1] *= 0.025
-            rocket[0].velocity[2] *= 0.025
-            vec3.add(trans, trans, rocket[0].velocity);
-            rocket[0].velocity[0] *= 40
-            rocket[0].velocity[1] *= 40
-            rocket[0].velocity[2] *= 40
-            //trans[1] = trans[1] + 0.5;
-            rocket[0].translation = trans;
-            //console.log(rotation);
-            rocket[0].updateTransform();
+                //let velocity_x = - Math.cos(yaw) * Math.sin(pitch) * Math.sin(roll)- Math.sin(yaw) * Math.cos(roll);
+                //let velocity_y = - Math.sin(yaw) * Math.sin(pitch) * Math.sin(roll) + Math.cos(yaw) * Math.cos(roll);
+                //let velocity_z = Math.cos(pitch) * Math.sin(roll);
+                const factor = 30;
+                rocket[0].velocity = [-velocity_x * factor, velocity_y * factor, -velocity_z * factor]//[velocity_x, velocity_y, velocity_z];
+                let trans = cam.translation.slice();
+                rocket[0].velocity[0] *= 0.025
+                rocket[0].velocity[1] *= 0.025
+                rocket[0].velocity[2] *= 0.025
+                vec3.add(trans, trans, rocket[0].velocity);
+                rocket[0].velocity[0] *= 40
+                rocket[0].velocity[1] *= 40
+                rocket[0].velocity[2] *= 40
+                //trans[1] = trans[1] + 0.5;
+                rocket[0].translation = trans;
+                //console.log(rotation);
+                rocket[0].updateTransform();
 
-            //move camera in other direction
-            
-            //const v_factor = 20;
-            //cam.velocity = [velocity_x * v_factor, - velocity_y * v_factor, velocity_z * v_factor];
-            //cam.updateTransform();
+                //move camera in other direction
+
+                //const v_factor = 20;
+                //cam.velocity = [velocity_x * v_factor, - velocity_y * v_factor, velocity_z * v_factor];
+                //cam.updateTransform();
+                lastClick = Date.now()
+            }
+        }
+    }
+
+    explode(pos) {
+        let p = this.funct.findById("particle");
+        let factor = 10;
+        for (let i = 0; i < (p.length / 2); i++) {
+            //p[i].translation = pos;
+            let position = pos.slice();
+            p[i].translation[0] = position[0] + Math.random();
+            p[i].translation[1] = position[1] + Math.random();
+            p[i].translation[2] = position[2] + Math.random();
+            p[i].velocity = [Math.random() * factor, Math.random() * factor, Math.random() * factor];
+            p[i].updateTransform();
+            p[i].rotation = [Math.random(), Math.random(), Math.random()];
+        }
+        for (let i = (p.length / 2); i < p.length; i++) {
+            //p[i].translation = pos;
+            let position = pos.slice();
+            p[i].translation[0] = position[0] + Math.random();
+            p[i].translation[1] = position[1] + Math.random();
+            p[i].translation[2] = position[2] + Math.random();
+            factor = factor * -1;
+            p[i].velocity = [Math.random() * factor, Math.random() * (-1) * factor, Math.random() * factor];
+            p[i].updateTransform();
         }
     }
 
